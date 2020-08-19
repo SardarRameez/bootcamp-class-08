@@ -1,24 +1,52 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
+  let [repos,setrepos]=useState([{}])
+  let [fetching,setFetching]=useState(false)
+  useEffect(()=>{
+    async function getData(){
+      setFetching(true)
+      let response=await fetch('https://api.github.com/users/SardarRameez/repos')
+      let data=await response.json()
+      setrepos(data)
+      setFetching(false)
+      console.log(data)
+    }
+    getData()
+
+  },[])
+  useEffect(()=>{
+    async function postData(){
+      let response=await fetch('https://jsonplaceholder.typicode.com/posts', {
+        method:'POST',
+        body:JSON.stringify({
+          name:"rameez",
+          userID:10,
+        }),
+        headers:{
+          "Content-type": "application/json; charset=UTF-8"
+        }
+      })
+      let post=await response.json()
+      console.log(post)
+    }
+    postData()
+  },[])
+
+  if(fetching){
+    return "Loading..."
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ul>
+        <strong>Data from Api</strong>
+        {repos.map((repo, id)=>
+        <li key={id}>{repo.name}</li>
+        )}
+
+        
+      </ul>
     </div>
   );
 }
